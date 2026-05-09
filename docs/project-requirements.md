@@ -7,16 +7,16 @@ Firstbase needs a public website for `npx create-firstbase-app@latest` that does
 - Convert developers who want a production-ready React or Next.js starting point.
 - Provide a web-based project configurator that captures the same choices as the CLI, then hands those choices to a project generation backend.
 
-The site should make Firstbase feel broader than a narrow framework starter. Create T3 App is positioned around full-stack, typesafe Next.js choices; Firstbase should be positioned around production scaffolding for React + Vite or Next.js, with Tailwind, API client setup, env handling, formatting, CI/security defaults, docs, and optional advanced modules.
+The site should make Firstbase feel broader than a narrow framework starter. Create T3 App is positioned around full-stack, typesafe Next.js choices; Firstbase should be positioned around production scaffolding for React + Vite or Next.js, with Tailwind, API client setup, env handling, formatting, Vercel-ready deployment, docs, and optional advanced modules.
 
 ## Source Inputs
 
 - CLI repo: https://github.com/Akshay-bendadi/firstbase
 - Package command: `npx create-firstbase-app@latest`
-- Current CLI version observed: `0.0.6`
+- Current CLI version observed: `0.0.7`
 - Node requirement: `>=20.19.0`
 - Competitor reference: https://create.t3.gg/
-- Design pattern selected from `getdesign-md-patterns`: xAI as the primary futuristic product pattern, with SpaceX-style stark launch-console restraint. The builder can keep workflow/canvas behavior, but the landing page must avoid command pills, decorative cards, GitHub star widgets, and theme switches.
+- Design pattern selected from `getdesign-md-patterns`: xAI as the primary futuristic product pattern, with SpaceX-style stark launch-console restraint. The builder can keep graph/canvas behavior, but the landing page must avoid command pills, decorative cards, GitHub star widgets, and theme switches.
 
 ## Web Intake
 
@@ -62,7 +62,7 @@ The current CLI is interactive. For a production backend, prefer one of these im
 - First viewport must identify Firstbase and the `npx` command immediately.
 - Show a command strip with copy-friendly package usage.
 - Explain what Firstbase generates without marketing-only filler.
-- Surface the differentiators: React or Next.js, Tailwind baseline, shadcn-ready primitives, env and API client, formatting, Husky, CI/security, generated docs, advanced modules.
+- Surface the differentiators: React or Next.js, Tailwind baseline, shadcn-ready primitives, env and API client, formatting, Vercel-ready deployment, generated docs, advanced modules.
 - Include a visible configurator entry point in the first viewport.
 - Include a competitor-aware but non-hostile positioning section focused on scope and outputs.
 
