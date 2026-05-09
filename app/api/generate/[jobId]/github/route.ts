@@ -16,6 +16,12 @@ type GithubRequest = {
   private?: boolean;
 };
 
+type GithubRef = {
+  object: {
+    sha: string;
+  };
+};
+
 class GithubApiError extends Error {
   constructor(
     message: string,
@@ -67,6 +73,31 @@ async function githubFetch<T>(url: string, token: string, init: RequestInit = {}
   return body;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForDefaultRef(owner: string, repo: string, branch: string, token: string) {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      return await githubFetch<GithubRef>(
+        `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
+        token,
+      );
+    } catch (error) {
+      lastError = error;
+      if (!(error instanceof GithubApiError) || error.status !== 404) {
+        throw error;
+      }
+      await sleep(500);
+    }
+  }
+
+  throw lastError;
+}
+
 export async function POST(request: Request, context: { params: Promise<{ jobId: string }> }) {
   const { jobId } = await context.params;
   const job = getInternalGenerationJob(jobId);
@@ -99,10 +130,12 @@ export async function POST(request: Request, context: { params: Promise<{ jobId:
       body: JSON.stringify({
         name: job.answers.projectName,
         private: Boolean(body.private),
-        auto_init: false,
+        auto_init: true,
       }),
     });
     const owner = repo.owner?.login || user.login;
+    const branch = repo.default_branch || "main";
+    const baseRef = await waitForDefaultRef(owner, repo.name, branch, token);
 
     const files = await listGeneratedFiles(job.projectPath);
     const blobs = await Promise.all(
@@ -144,17 +177,22 @@ export async function POST(request: Request, context: { params: Promise<{ jobId:
         body: JSON.stringify({
           message: "Initial commit (via firstbase web)",
           tree: tree.sha,
+          parents: [baseRef.object.sha],
         }),
       },
     );
 
-    await githubFetch(`https://api.github.com/repos/${owner}/${repo.name}/git/refs`, token, {
-      method: "POST",
-      body: JSON.stringify({
-        ref: `refs/heads/${repo.default_branch || "main"}`,
-        sha: commit.sha,
-      }),
-    });
+    await githubFetch(
+      `https://api.github.com/repos/${owner}/${repo.name}/git/refs/heads/${branch}`,
+      token,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          sha: commit.sha,
+          force: false,
+        }),
+      },
+    );
 
     return NextResponse.json(markGithubReady(jobId, repo.html_url));
   } catch (error) {
