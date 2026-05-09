@@ -644,6 +644,10 @@ export function BuilderExperience() {
                 Used only for this push. Classic tokens need public_repo for public repos or repo
                 for private repos.
               </p>
+              <p className="text-xs text-muted-foreground/60">
+                GitHub repo name comes from Project Name:{" "}
+                <span className="font-mono text-foreground/70">{answers.projectName}</span>
+              </p>
             </div>
 
             <div className="grid gap-2">

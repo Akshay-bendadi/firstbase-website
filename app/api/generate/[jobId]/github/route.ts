@@ -22,6 +22,13 @@ type GithubRef = {
   };
 };
 
+type GithubErrorDetail = {
+  code?: string;
+  field?: string;
+  message?: string;
+  resource?: string;
+};
+
 class GithubApiError extends Error {
   constructor(
     message: string,
@@ -30,6 +37,21 @@ class GithubApiError extends Error {
   ) {
     super(message);
   }
+}
+
+function formatGithubErrorMessage(message: string, errors?: GithubErrorDetail[]) {
+  const details = errors
+    ?.map(
+      (error) =>
+        error.message || [error.resource, error.field, error.code].filter(Boolean).join(" "),
+    )
+    .filter(Boolean);
+
+  if (!details?.length) {
+    return message;
+  }
+
+  return `${message}: ${details.join("; ")}`;
 }
 
 function explainGithubError(error: unknown): string {
@@ -43,6 +65,10 @@ function explainGithubError(error: unknown): string {
       : "";
 
     return `This token can authenticate, but it cannot create or write the repository. Use a classic token with public_repo for public repos or repo for private repos, or a fine-grained token with repository Administration: write and Contents: write.${permissions}`;
+  }
+
+  if (error.message.toLowerCase().includes("name already exists")) {
+    return "A repository with this project name already exists on your GitHub account. Change the Project Name in the builder or delete the existing GitHub repository, then generate and push again.";
   }
 
   return error.message;
@@ -60,11 +86,17 @@ async function githubFetch<T>(url: string, token: string, init: RequestInit = {}
     },
   });
 
-  const body = (await response.json().catch(() => ({}))) as T & { message?: string };
+  const body = (await response.json().catch(() => ({}))) as T & {
+    errors?: GithubErrorDetail[];
+    message?: string;
+  };
 
   if (!response.ok) {
     throw new GithubApiError(
-      body.message || `GitHub request failed with ${response.status}.`,
+      formatGithubErrorMessage(
+        body.message || `GitHub request failed with ${response.status}.`,
+        body.errors,
+      ),
       response.status,
       response.headers.get("x-accepted-github-permissions"),
     );
