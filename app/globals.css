@@ -4,48 +4,39 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 222 22% 12%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 22% 12%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 22% 12%;
-    --primary: 0 74% 47%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 95%;
-    --muted-foreground: 220 9% 42%;
-    --accent: 0 74% 47%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 54%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 88%;
-    --input: 220 13% 88%;
-    --ring: 0 74% 47%;
-    --radius: 0.5rem;
-  }
+    /* ── SPACE CORE ── */
+    --background: 218 80% 5%;
+    --foreground: 210 22% 91%;
+    --card: 218 55% 8%;
+    --card-foreground: 210 18% 89%;
+    --popover: 218 65% 6%;
+    --popover-foreground: 210 18% 89%;
 
-  .dark {
-    --background: 222 26% 8%;
-    --foreground: 0 0% 98%;
-    --card: 222 20% 11%;
-    --card-foreground: 0 0% 98%;
-    --popover: 222 20% 11%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 74% 54%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 17% 14%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 222 17% 14%;
-    --muted-foreground: 0 0% 72%;
-    --accent: 0 74% 54%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 63% 41%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 222 17% 16%;
-    --input: 222 17% 16%;
-    --ring: 0 74% 54%;
+    /* ── PRIMARY: ELECTRIC BLUE ── */
+    --primary: 211 97% 62%;
+    --primary-foreground: 218 80% 5%;
+
+    /* ── SECONDARY: DEEP GLASS ── */
+    --secondary: 218 40% 11%;
+    --secondary-foreground: 210 18% 89%;
+
+    /* ── MUTED ── */
+    --muted: 218 28% 15%;
+    --muted-foreground: 215 14% 50%;
+
+    /* ── ACCENT: NEON CYAN ── */
+    --accent: 174 88% 52%;
+    --accent-foreground: 218 80% 5%;
+
+    /* ── DESTRUCTIVE ── */
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 0 0% 97%;
+
+    /* ── BORDERS ── */
+    --border: 218 22% 17%;
+    --input: 218 22% 14%;
+    --ring: 174 88% 52%;
+    --radius: 0.5rem;
   }
 
   * {
@@ -54,28 +45,258 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
+    background-color: hsl(218 80% 5%);
     background-image:
-      linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+      radial-gradient(ellipse 80% 55% at 50% -5%, hsl(211 97% 62% / 0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 45% at 90% 85%, hsl(263 82% 67% / 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 45% 35% at 8% 65%, hsl(174 88% 52% / 0.05) 0%, transparent 50%),
+      linear-gradient(to right, hsl(218 22% 17% / 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(218 22% 17% / 0.12) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+    background-attachment: fixed, fixed, fixed, fixed, fixed;
+  }
+
+  ::selection {
+    background: hsl(174 88% 52% / 0.28);
+    color: hsl(174 88% 88%);
+  }
+}
+
+@layer utilities {
+  /* ── GLOW EFFECTS ── */
+  .glow-blue {
+    box-shadow:
+      0 0 18px hsl(211 97% 62% / 0.38),
+      0 0 56px hsl(211 97% 62% / 0.12);
+  }
+
+  .glow-cyan {
+    box-shadow:
+      0 0 18px hsl(174 88% 52% / 0.38),
+      0 0 56px hsl(174 88% 52% / 0.12);
+  }
+
+  .glow-purple {
+    box-shadow:
+      0 0 18px hsl(263 82% 67% / 0.38),
+      0 0 56px hsl(263 82% 67% / 0.12);
+  }
+
+  /* ── GLASSMORPHISM ── */
+  .glass {
+    background: hsl(218 55% 8% / 0.72);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid hsl(218 22% 20% / 0.65);
+  }
+
+  .glass-card {
+    background: hsl(218 50% 7% / 0.82);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid hsl(218 28% 22% / 0.5);
+  }
+
+  /* ── SCAN LINES ── */
+  .scan-line {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(174 88% 52% / 0.55) 50%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: scan-flow 3s linear infinite;
+  }
+
+  .scan-line-blue {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(211 97% 62% / 0.45) 50%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: scan-flow 4.5s linear infinite;
+  }
+
+  .scan-line-purple {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(263 82% 67% / 0.38) 50%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: scan-flow 6s linear infinite;
+  }
+
+  .scan-line-v {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(174 88% 52% / 0.45) 50%,
+      transparent 100%
+    );
+    background-size: 100% 220%;
+    animation: scan-flow-v 5s linear infinite;
+  }
+
+  /* ── SKELETON ── */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(218 28% 14%) 0%,
+      hsl(218 28% 22%) 50%,
+      hsl(218 28% 14%) 100%
+    );
+    background-size: 220% 100%;
+    animation: scan-flow 1.6s linear infinite;
+  }
+
+  /* ── NODE PULSE ── */
+  .node-pulse {
+    animation: node-pulse 2s ease-in-out infinite;
+  }
+
+  .border-glow-active {
+    animation: border-glow 2.5s ease-in-out infinite;
+  }
+
+  /* ── GRADIENT TEXT ── */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(211 97% 72%) 0%, hsl(174 88% 62%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-purple {
+    background: linear-gradient(135deg, hsl(263 82% 77%) 0%, hsl(211 97% 72%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── GRID BACKGROUNDS ── */
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(218 22% 17% / 0.65) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(218 22% 17% / 0.65) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.03), transparent 16%);
-    opacity: 0.55;
+  .grid-bg-sm {
+    background-image:
+      linear-gradient(hsl(218 22% 17% / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(218 22% 17% / 0.5) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 
-  #root,
-  body,
-  html {
-    min-height: 100%;
+  /* ── NEON BORDERS ── */
+  .neon-border-cyan {
+    border-color: hsl(174 88% 52% / 0.55);
+    box-shadow:
+      0 0 10px hsl(174 88% 52% / 0.22),
+      inset 0 0 10px hsl(174 88% 52% / 0.06);
+  }
+
+  .neon-border-blue {
+    border-color: hsl(211 97% 62% / 0.55);
+    box-shadow:
+      0 0 10px hsl(211 97% 62% / 0.22),
+      inset 0 0 10px hsl(211 97% 62% / 0.06);
+  }
+}
+
+/* ── KEYFRAMES ── */
+@keyframes scan-flow {
+  from {
+    background-position: 220% 0;
+  }
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@keyframes scan-flow-v {
+  from {
+    background-position: 0 220%;
+  }
+  to {
+    background-position: 0 -220%;
+  }
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(174 88% 52% / 0.42);
+  }
+  50% {
+    box-shadow: 0 0 0 16px hsl(174 88% 52% / 0);
+  }
+}
+
+@keyframes border-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px hsl(174 88% 52% / 0.28),
+      inset 0 0 8px hsl(174 88% 52% / 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 28px hsl(174 88% 52% / 0.58),
+      inset 0 0 18px hsl(174 88% 52% / 0.12);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    box-shadow: 0 0 4px hsl(174 88% 52% / 0.6);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px hsl(174 88% 52% / 1);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

@@ -1,15 +1,24 @@
 import axios, { AxiosError } from "axios";
+
 import { getApiBaseUrl } from "./env";
 
 const baseURL = getApiBaseUrl();
 const baseOrigin = new URL(baseURL).origin;
-
 
 type ApiError = {
   message: string;
   status?: number;
   data?: unknown;
 };
+
+function getResponseMessage(data: unknown): string | undefined {
+  if (!data || typeof data !== "object" || !("message" in data)) {
+    return undefined;
+  }
+
+  const message = (data as { message?: unknown }).message;
+  return typeof message === "string" ? message : undefined;
+}
 
 function removeAuthorizationHeaders(headers: unknown): void {
   if (!headers || typeof headers !== "object") {
@@ -58,7 +67,7 @@ api.interceptors.response.use(
       }
 
       return Promise.reject({
-        message: error.response?.data?.message || error.message || "Request failed",
+        message: getResponseMessage(error.response?.data) || error.message || "Request failed",
         status: error.response?.status,
         data: error.response?.data,
       } satisfies ApiError);
@@ -67,7 +76,7 @@ api.interceptors.response.use(
     return Promise.reject({
       message: "Unexpected network error",
     } satisfies ApiError);
-  }
+  },
 );
 
 export type { ApiError };
