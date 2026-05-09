@@ -13,9 +13,34 @@ export const dynamic = "force-dynamic";
 
 type GithubRequest = {
   token?: string;
-  owner?: string;
   private?: boolean;
 };
+
+class GithubApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly acceptedPermissions: string | null,
+  ) {
+    super(message);
+  }
+}
+
+function explainGithubError(error: unknown): string {
+  if (!(error instanceof GithubApiError)) {
+    return error instanceof Error ? error.message : "GitHub push failed.";
+  }
+
+  if (error.message.toLowerCase().includes("resource not accessible by personal access token")) {
+    const permissions = error.acceptedPermissions
+      ? ` GitHub reported required permissions: ${error.acceptedPermissions}.`
+      : "";
+
+    return `This token can authenticate, but it cannot create or write the repository. Use a classic token with public_repo for public repos or repo for private repos, or a fine-grained token with repository Administration: write and Contents: write.${permissions}`;
+  }
+
+  return error.message;
+}
 
 async function githubFetch<T>(url: string, token: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(url, {
@@ -32,7 +57,11 @@ async function githubFetch<T>(url: string, token: string, init: RequestInit = {}
   const body = (await response.json().catch(() => ({}))) as T & { message?: string };
 
   if (!response.ok) {
-    throw new Error(body.message || `GitHub request failed with ${response.status}.`);
+    throw new GithubApiError(
+      body.message || `GitHub request failed with ${response.status}.`,
+      response.status,
+      response.headers.get("x-accepted-github-permissions"),
+    );
   }
 
   return body;
@@ -60,24 +89,20 @@ export async function POST(request: Request, context: { params: Promise<{ jobId:
     markPushing(jobId);
 
     const user = await githubFetch<{ login: string }>("https://api.github.com/user", token);
-    const owner = body.owner?.trim() || user.login;
-    const isOrg = owner !== user.login;
-    const repoCreateUrl = isOrg
-      ? `https://api.github.com/orgs/${owner}/repos`
-      : "https://api.github.com/user/repos";
-
-    const repo = await githubFetch<{ html_url: string; name: string; default_branch: string }>(
-      repoCreateUrl,
-      token,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          name: job.answers.projectName,
-          private: Boolean(body.private),
-          auto_init: false,
-        }),
-      },
-    );
+    const repo = await githubFetch<{
+      html_url: string;
+      name: string;
+      default_branch: string;
+      owner: { login: string };
+    }>("https://api.github.com/user/repos", token, {
+      method: "POST",
+      body: JSON.stringify({
+        name: job.answers.projectName,
+        private: Boolean(body.private),
+        auto_init: false,
+      }),
+    });
+    const owner = repo.owner?.login || user.login;
 
     const files = await listGeneratedFiles(job.projectPath);
     const blobs = await Promise.all(
@@ -133,7 +158,7 @@ export async function POST(request: Request, context: { params: Promise<{ jobId:
 
     return NextResponse.json(markGithubReady(jobId, repo.html_url));
   } catch (error) {
-    const message = error instanceof Error ? error.message : "GitHub push failed.";
+    const message = explainGithubError(error);
     return NextResponse.json(markGithubFailed(jobId, message), { status: 500 });
   }
 }

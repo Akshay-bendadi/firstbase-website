@@ -101,7 +101,6 @@ export function BuilderExperience() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [githubToken, setGithubToken] = useState("");
-  const [githubOwner, setGithubOwner] = useState("");
   const [githubPrivate, setGithubPrivate] = useState(false);
   const [pushing, setPushing] = useState(false);
 
@@ -236,7 +235,6 @@ export function BuilderExperience() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token: githubToken,
-        owner: githubOwner || undefined,
         private: githubPrivate,
       }),
     });
@@ -609,7 +607,7 @@ export function BuilderExperience() {
             <h2 className="text-base font-bold text-foreground">Outputs</h2>
           </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3">
             <a
               href={job?.downloadUrl ?? undefined}
               aria-disabled={job?.status !== "ready"}
@@ -623,23 +621,9 @@ export function BuilderExperience() {
               <Download className="h-4 w-4" aria-hidden="true" />
               Download ZIP
             </a>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={job?.status !== "ready" || pushing}
-              onClick={pushToGithub}
-              className="gap-2 min-h-12"
-            >
-              {pushing ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : (
-                <GitBranch className="h-4 w-4" aria-hidden="true" />
-              )}
-              Push to GitHub
-            </Button>
           </div>
 
-          <div className="mt-5 grid gap-3">
+          <div className="mt-6 grid gap-4 border-t border-white/8 pt-5">
             <div className="grid gap-2">
               <Label
                 htmlFor="githubToken"
@@ -657,29 +641,39 @@ export function BuilderExperience() {
                 className="font-mono"
               />
               <p className="text-xs text-muted-foreground/60">
-                Used only for this push. Never stored on the server.
+                Used only for this push. Classic tokens need public_repo for public repos or repo
+                for private repos.
               </p>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-              <Input
-                value={githubOwner}
-                onChange={(e) => setGithubOwner(e.target.value)}
-                placeholder="Owner or org (optional)"
-              />
-              <button
-                type="button"
-                onClick={() => setGithubPrivate((v) => !v)}
-                className={cn(
-                  "min-h-11 rounded-lg border px-4 text-sm font-medium transition-all duration-200",
-                  githubPrivate
-                    ? "border-primary/60 bg-primary/12 text-primary shadow-glow-blue"
-                    : "border-white/10 bg-secondary/40 text-muted-foreground hover:border-primary/35 hover:text-foreground",
-                )}
-              >
-                {githubPrivate ? "Private" : "Public"}
-              </button>
+            <div className="grid gap-2">
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                Repository visibility
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <ChoiceButton active={!githubPrivate} onClick={() => setGithubPrivate(false)}>
+                  Public
+                </ChoiceButton>
+                <ChoiceButton active={githubPrivate} onClick={() => setGithubPrivate(true)}>
+                  Private
+                </ChoiceButton>
+              </div>
             </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              disabled={job?.status !== "ready" || pushing || !githubToken.trim()}
+              onClick={pushToGithub}
+              className="gap-2 min-h-12"
+            >
+              {pushing ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <GitBranch className="h-4 w-4" aria-hidden="true" />
+              )}
+              {pushing ? "Pushing repository..." : "Push to GitHub"}
+            </Button>
 
             {job?.githubUrl ? (
               <a
