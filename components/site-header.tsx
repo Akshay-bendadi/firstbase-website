@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteHeader() {
@@ -9,9 +10,15 @@ export function SiteHeader() {
           href="/"
           className="group flex items-center gap-3 text-sm font-semibold tracking-wide"
         >
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 transition-all duration-300 group-hover:border-primary/60 group-hover:shadow-glow-blue">
-            <span className="h-2.5 w-2.5 rotate-45 border border-accent/70 bg-accent/15 transition-all duration-300 group-hover:bg-accent/30" />
-          </span>
+          <Image
+            src="/icon.svg"
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+            aria-hidden="true"
+            className="h-8 w-8 rounded-lg border border-primary/30 shadow-glow-blue/20 transition-all duration-300 group-hover:border-primary/60 group-hover:shadow-glow-blue"
+          />
           <span className="text-gradient font-bold">Firstbase</span>
         </Link>
 

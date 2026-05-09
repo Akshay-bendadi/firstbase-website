@@ -1,4 +1,4 @@
-# firstbase-website
+# Firstbase
 
 Website and web builder for [Firstbase](https://github.com/Akshay-bendadi/firstbase), a CLI for generating production-ready React and Next.js project foundations.
 
@@ -7,7 +7,6 @@ The site exposes a visual builder for the `create-firstbase-app` CLI and can exp
 ## Links
 
 - CLI repository: https://github.com/Akshay-bendadi/firstbase
-- Website repository: https://github.com/Akshay-bendadi/firstbase-website
 - CLI package: https://www.npmjs.com/package/create-firstbase-app
 - Current CLI version shown on the site: `0.0.7`
 
@@ -84,4 +83,4 @@ npm run check
 
 The builder accepts a GitHub token only for the active push request. The server creates a repository using the generated project name, uploads generated files through the GitHub API, and returns the repository URL when complete.
 
-Ignored local folders such as `node_modules`, `.next`, and `.env.local` are not committed or pushed from this website repository.
+Ignored local folders such as `node_modules`, `.next`, and `.env.local` are not committed or pushed from this repository.
